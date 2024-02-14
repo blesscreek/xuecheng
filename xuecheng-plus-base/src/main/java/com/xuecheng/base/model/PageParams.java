@@ -17,6 +17,9 @@ public class PageParams {
     @ApiModelProperty("每页记录数")
     private Long pageSize = 30L;
 
+    public PageParams() {
+    }
+
     public PageParams(Long pageNo, Long pageSize) {
         this.pageNo = pageNo;
         this.pageSize = pageSize;
