@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  *
  * @Description:
  */
-@EnableScheduling
+
 @EnableSwagger2Doc
 @SpringBootApplication
 public class SystemApplication {
