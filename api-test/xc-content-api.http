@@ -24,7 +24,7 @@ Content-Type: application/json
   "validDays": 365,
   "mt": "1-1",
   "st": "1-1-1",
-  "name": "java网络编程高级",
+  "name": "",
   "pic": "ffff",
   "teachmode": "200002",
   "users": "初级人员",
@@ -32,3 +32,12 @@ Content-Type: application/json
   "grade": "204001",
   "description": "java网络编程高级java网络编程高级"
 }
+
+
+### 查询课程
+GET {{content_host}}/content/course/40
+Content-Type: application/json
+
+### 查询课程
+GET {{content_host}}/content/teachplan/117/tree-nodes
+Content-Type: application/json
