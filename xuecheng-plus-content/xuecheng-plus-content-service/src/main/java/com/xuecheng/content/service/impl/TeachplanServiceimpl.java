@@ -1,6 +1,8 @@
 package com.xuecheng.content.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.xuecheng.base.exception.XueChengPlusException;
 import com.xuecheng.content.mapper.TeachplanMapper;
 import com.xuecheng.content.mapper.TeachplanMediaMapper;
 import com.xuecheng.content.model.dto.SaveTeachplanDto;
@@ -24,6 +26,8 @@ public class TeachplanServiceimpl implements TeachplanService {
 
     @Autowired
     TeachplanMapper teachplanMapper;
+    @Autowired
+    TeachplanMediaMapper teachplanMediaMapper;
 
     @Override
     public List<TeachplanDto> findTeachplanTree(Long courseId) {
@@ -59,4 +63,47 @@ public class TeachplanServiceimpl implements TeachplanService {
             teachplanMapper.updateById(teachplan);
         }
     }
+
+    @Override
+    public void deleteTeachplan(Long teachplanId) {
+        int i = teachplanMapper.deleteTeachPlan(teachplanId);
+        if (i == 0) {
+            XueChengPlusException.cast("课程计划信息还有子级信息，无法操作");
+            return;
+        }
+        int j = teachplanMediaMapper.deleteTeachplanMedia(teachplanId);
+        return;
+    }
+
+    @Override
+    public void moveTeachplan(String moveType, Long teachplanId) {
+        Teachplan teachplan = teachplanMapper.selectById(teachplanId);
+        if ("moveup".equals(moveType)) {
+            if (teachplan.getOrderby() == 1) {
+                XueChengPlusException.cast("该课程计划已在最上");
+            }
+            int i = teachplanMapper.moveupTeachplan1(teachplanId);
+            int j = teachplanMapper.moveupTeachplan2(teachplanId);
+            if (i == 0 || j == 0) {
+                XueChengPlusException.cast("课程计划上移失败");
+            }
+        } else if ("movedown".equals(moveType)) {
+            LambdaQueryWrapper<Teachplan> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(Teachplan::getParentid,teachplan.getParentid())
+                    .eq(Teachplan::getGrade, teachplan.getGrade())
+                    .eq(Teachplan::getCourseId, teachplan.getCourseId());
+            Integer integer = teachplanMapper.selectCount(queryWrapper);
+            if (teachplan.getOrderby() == integer) {
+                XueChengPlusException.cast("该课程已经在最下");
+            }
+            int i = teachplanMapper.movedownTeachplan1(teachplanId);
+            int j = teachplanMapper.movedownTeachplan2(teachplanId);
+            if (i == 0 || j == 0) {
+                XueChengPlusException.cast("课程计划下移失败");
+            }
+        }
+        return;
+    }
+
+
 }

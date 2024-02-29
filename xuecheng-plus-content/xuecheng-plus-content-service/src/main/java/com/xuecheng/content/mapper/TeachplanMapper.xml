@@ -96,4 +96,59 @@
                  two.orderby
     </select>
 
+    <delete id="deleteTeachPlan" parameterType="long" >
+        delete from teachplan
+        where id = #{value}
+          and  (
+                   select count(*) from
+                           (select * from teachplan)
+                           as temp where parentid = #{value}) = 0;
+
+    </delete>
+
+    <update id="moveupTeachplan1" parameterType="long">
+        update teachplan
+        set orderby = orderby + 1
+        where id in (select id
+                     from (select id
+                           from teachplan
+                           where orderby = (select orderby
+                                            from teachplan
+                                            where id = #{value}) - 1
+                             and parentid = (select parentid
+                                             from teachplan
+                                             where id = #{value})
+                             and grade = (select grade
+                                          from teachplan
+                                          where id = #{value})) as temp);
+
+    </update>
+    <update id="moveupTeachplan2" parameterType="long">
+        update teachplan set orderby = (
+                                    select temp.orderby from (
+                                                                        select * from teachplan
+                                                                    )  as temp where temp.id = #{value}
+                                       ) - 1 where id = #{value};
+    </update>
+
+    <update id="movedownTeachplan1" parameterType="long">
+        update teachplan
+        set orderby = orderby - 1
+        where id in (select id from (
+                                        select * from teachplan where orderby = (select orderby from teachplan where id = #{value}) + 1
+                                                                  and parentid = (select parentid from teachplan where id = #{value})
+                                                                  and grade = (select  grade from teachplan where id =#{value})
+                                    )as temp);
+    </update>
+
+    <update id="movedownTeachplan2" parameterType="long">
+        update teachplan
+        set orderby = (
+                          select orderby from (
+                                                  select * from teachplan where id =#{value}
+                                              ) as temp where temp.id = #{value}
+                      ) + 1
+        where id = #{value};
+    </update>
+
 </mapper>

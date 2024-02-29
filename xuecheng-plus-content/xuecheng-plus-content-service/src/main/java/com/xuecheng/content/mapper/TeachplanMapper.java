@@ -20,4 +20,11 @@ public interface TeachplanMapper extends BaseMapper<Teachplan> {
      * @return
      */
     public List<TeachplanDto> selectTreeNodes(long courseId);
+
+    public int deleteTeachPlan(long teachPlanId);
+    public int moveupTeachplan1(long teachPlanId);
+    public int moveupTeachplan2(long teachPlanId);
+
+    public int movedownTeachplan1(long teachPlanId);
+    public int movedownTeachplan2(long teachPlanId);
 }
